@@ -18,42 +18,48 @@ model, X_test_tfidf, y_test, tfidf = train_model(X, y)
 accuracy, precision, recall, f1_score, report, cm = evaluate_model(model, X_test_tfidf, y_test)
 
 def show():
-    st.subheader("Hasil Evaluasi")
-    st.write(f"**Akurasi:** {accuracy:.4f}")
-    st.write(f"**Precision:** {precision:.4f}")
-    st.write(f"**Recall:** {recall:.4f}")
-    st.write(f"**F1-Score:** {f1_score:.4f}")
-    st.title("🔮 Prediksi Sentimen")
     
-    st.markdown("""
-    Masukkan teks di bawah ini untuk memprediksi sentimen.
-    Model kami akan menganalisis dan memberikan prediksi apakah teks tersebut
-    termasuk dalam kategori **Positif**, **Negatif**, atau **Netral**.
-    """)
+    tab1, tab2 = st.tabs(["Prediksi Sentimen", "Hasil Kinerja Model"])
     
-    text_input = st.text_area("Masukkan teks yang ingin dianalisis:")
-    
-    if st.button("Prediksi"):
-        if not text_input.strip():
-            st.warning("Masukkan teks terlebih dahulu")
-        else:
-            with st.spinner('Menganalisis sentimen...'):
-                try:
-                    preprocessed_text = preprocess_text(text_input, slang_dict)
-                    st.write('Kata setelah preprocessing:', preprocessed_text)
-                    
-                    input_tfidf = tfidf.transform([preprocessed_text])
-                    prediction = str(model.predict(input_tfidf)[0])
-                    
-                    result_container = st.container()
+    with tab1:
+        st.title("🔮 Prediksi Sentimen")
+        
+        st.markdown("""
+        Masukkan teks di bawah ini untuk memprediksi sentimen.
+        Model kami akan menganalisis dan memberikan prediksi apakah teks tersebut
+        termasuk dalam kategori **Positif**, **Negatif**, atau **Netral**.
+        """)
+        
+        text_input = st.text_area("Masukkan teks yang ingin dianalisis:")
+        
+        if st.button("Prediksi"):
+            if not text_input.strip():
+                st.warning("Masukkan teks terlebih dahulu")
+            else:
+                with st.spinner('Menganalisis sentimen...'):
+                    try:
+                        preprocessed_text = preprocess_text(text_input, slang_dict)
+                        st.write('Kata setelah preprocessing:', preprocessed_text)
+                        
+                        input_tfidf = tfidf.transform([preprocessed_text])
+                        prediction = str(model.predict(input_tfidf)[0])
+                        
+                        result_container = st.container()
 
-                    if prediction == "Positif":
-                        result_container.success(f"**Hasil Prediksi :** **{prediction}** 😊")
-                    elif prediction == "Negatif":
-                        result_container.error(f"**Hasil Prediksi :** **{prediction}** 😢")
-                    else:
-                        result_container.warning(f"**Hasil Prediksi :** **{prediction}** 😐")
-                except Exception as e:
-                    st.error(f"Prediksi gagal: {str(e)}")
+                        if prediction == "Positif":
+                            result_container.success(f"**Hasil Prediksi :** **{prediction}** 😊")
+                        elif prediction == "Negatif":
+                            result_container.error(f"**Hasil Prediksi :** **{prediction}** 😢")
+                        else:
+                            result_container.warning(f"**Hasil Prediksi :** **{prediction}** 😐")
+                    except Exception as e:
+                        st.error(f"Prediksi gagal: {str(e)}")
+                        
+    with tab2:
+        st.title("Hasil Kinerja Model")
+        st.write(f"**Akurasi:** {accuracy:.4f}")
+        st.write(f"**Precision:** {precision:.4f}")
+        st.write(f"**Recall:** {recall:.4f}")
+        st.write(f"**F1-Score:** {f1_score:.4f}")
                     
 show()
