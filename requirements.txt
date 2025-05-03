@@ -4,10 +4,9 @@ scikit-learn
 matplotlib
 seaborn
 plotly
-imblearn
+imbalanced-learn
 sastrawi
 textblob
 wordcloud
-sklearn
-re
+scikit-learn
 
