@@ -2,7 +2,6 @@ import streamlit as st
 import plotly.express as px
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
-from collections import Counter
 import pandas as pd
 
 data = pd.read_csv('data/Hasil_Labelling.csv', sep=';', on_bad_lines='skip')

@@ -1,8 +1,6 @@
 import streamlit as st
 import plotly.express as px
 import pandas as pd
-import numpy as np
-import time
 
 data = pd.read_csv('data/Hasil_Labelling.csv', sep=';', on_bad_lines='skip')
 

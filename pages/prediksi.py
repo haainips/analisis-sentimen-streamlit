@@ -2,11 +2,7 @@ import streamlit as st
 import pandas as pd
 from utils import load_slang_dictionary
 from preprocessing import preprocess_text
-from sklearn.feature_extraction.text import TfidfVectorizer
 from model import train_model, evaluate_model
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, precision_recall_fscore_support
-from sklearn.model_selection import train_test_split
-from imblearn.over_sampling import SMOTE
 
 data = pd.read_csv('data/Hasil_Labelling.csv', sep=';', on_bad_lines='skip')
 slang_dict = load_slang_dictionary('data/slang.txt')

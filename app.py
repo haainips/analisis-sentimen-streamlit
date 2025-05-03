@@ -1,5 +1,4 @@
 import streamlit as st
-import pandas as pd
 
 # Membuat halaman dengan deskripsi tambahan
 beranda = st.Page("pages/beranda.py", title="🏠 Beranda")
