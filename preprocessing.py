@@ -4,9 +4,7 @@ import nltk
 from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 from Sastrawi.StopWordRemover.StopWordRemoverFactory import StopWordRemoverFactory
 
-nltk.download('punkt', download_dir='nltk_data')
-nltk.data.path.append('./nltk_data')
-
+nltk.download('punkt_tab')
 # Setup
 stemmer = StemmerFactory().create_stemmer()
 stopword_remover = StopWordRemoverFactory().create_stop_word_remover()
