@@ -1,10 +1,11 @@
 import streamlit as st
 import pandas as pd
+import plotly.express as px
 from utils import load_slang_dictionary
 from preprocessing import preprocess_text
 from model import train_model, evaluate_model
 
-data = pd.read_csv('data/Hasil_Labelling.csv', sep=';', on_bad_lines='skip')
+data = pd.read_csv('data/Hasil_Labelling3.csv', sep=';', on_bad_lines='skip')
 slang_dict = load_slang_dictionary('data/slang.txt')
 
 X = data['cleaned']
@@ -52,10 +53,35 @@ def show():
                         st.error(f"Prediksi gagal: {str(e)}")
                         
     with tab2:
-        st.title("Hasil Kinerja Model")
-        st.write(f"**Akurasi:** {accuracy:.4f}")
-        st.write(f"**Precision:** {precision:.4f}")
-        st.write(f"**Recall:** {recall:.4f}")
-        st.write(f"**F1-Score:** {f1_score:.4f}")
-                    
+        st.title("📊 Hasil Kinerja Model")
+        
+        # Metrics in columns
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.metric(label="Akurasi", value=f"{accuracy:.2%}")
+        with col2:
+            st.metric(label="Precision", value=f"{precision:.2%}")
+        with col3:
+            st.metric(label="Recall", value=f"{recall:.2%}")
+        with col4:
+            st.metric(label="F1-Score", value=f"{f1_score:.2%}")
+        
+        st.markdown("---")
+        
+        # Confusion Matrix Section
+        st.subheader("Confusion Matrix")
+        
+        # Option 1: Plotly (Interactive)
+        st.checkbox("Tampilkan Confusion Matrix Interaktif", value=True)
+        cm_labels = ['Negatif', 'Netral', 'Positif']
+        fig = px.imshow(
+            cm,
+            x=cm_labels,
+            y=cm_labels,
+            color_continuous_scale='Blues',
+            text_auto=True,
+            labels=dict(x="Prediksi", y="Aktual", color="Jumlah")
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
 show()

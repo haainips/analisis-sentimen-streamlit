@@ -2,7 +2,7 @@ import streamlit as st
 import plotly.express as px
 import pandas as pd
 
-data = pd.read_csv('data/Hasil_Labelling.csv', sep=';', on_bad_lines='skip')
+data = pd.read_csv('data/Hasil_Labelling3.csv', sep=';', on_bad_lines='skip')
 
 st.title("📊 Dashboard Analisis Sentimen")
 st.markdown("""
@@ -30,20 +30,16 @@ with col1:
 
 with col2:
     st.metric("Sentimen Positif", 
-            f"{positive_count:,}", 
-            f"{positive_percentage:.1f}%")
+            f"{positive_count:,}")
 
 with col3:
     st.metric("Sentimen Negatif", 
-            f"{negative_count:,}", 
-            f"{negative_percentage:.1f}%")
+            f"{negative_count:,}")
     
 with col4:
     st.metric("Sentimen Negatif", 
-            f"{neutral_count:,}", 
-            f"{neutral_percentage:.1f}%")
+            f"{neutral_count:,}")
 
-st.info("Dataset")
 
 st.markdown("---")
     

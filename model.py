@@ -6,16 +6,16 @@ from sklearn.metrics import accuracy_score, classification_report, confusion_mat
 
 def train_model(X, y):
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.1, random_state=42
+        X, y, test_size=0.3, random_state=42
     )
-    tfidf = TfidfVectorizer(ngram_range=(1,2), max_features=3000, norm='l2')
+    tfidf = TfidfVectorizer(ngram_range=(1,2), max_features=3000)
     X_train_tfidf = tfidf.fit_transform(X_train)
     X_test_tfidf = tfidf.transform(X_test)
     
     smote = SMOTE(random_state=42)
     X_train_smote, y_train_smote = smote.fit_resample(X_train_tfidf, y_train)
 
-    model = MultinomialNB(alpha=1.0, fit_prior=True)
+    model = MultinomialNB()
     model.fit(X_train_smote, y_train_smote)
 
     return model, X_test_tfidf, y_test, tfidf
