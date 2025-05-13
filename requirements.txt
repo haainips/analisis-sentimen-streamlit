@@ -9,4 +9,5 @@ sastrawi
 textblob
 wordcloud
 scikit-learn
+nltk
 
