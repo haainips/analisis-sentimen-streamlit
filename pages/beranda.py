@@ -2,7 +2,7 @@ import streamlit as st
 import plotly.express as px
 import pandas as pd
 
-data = pd.read_csv('data/Hasil_Labelling3.csv', sep=';', on_bad_lines='skip')
+data = pd.read_csv('data/Hasil_Labelling.csv', sep=';', on_bad_lines='skip')
 
 st.title("📊 Dashboard Analisis Sentimen")
 st.markdown("""

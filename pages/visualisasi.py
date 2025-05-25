@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 import pandas as pd
 
-data = pd.read_csv('data/Hasil_Labelling3.csv', sep=';', on_bad_lines='skip')
+data = pd.read_csv('data/Hasil_Labelling.csv', sep=';', on_bad_lines='skip')
 
 def visualization():
     st.title("📈 Visualisasi Sentimen")
@@ -35,19 +35,27 @@ def visualization():
                     st.write("Contoh data kolom 'at':", data['at'].head())
                 else:
                     valid_data = data.dropna(subset=['at'])
-                    
+
+                    # Resample harian dan bulanan
                     daily_sentiment = valid_data.resample('D', on='at')['Score'].mean().reset_index()
                     monthly_sentiment = valid_data.resample('M', on='at')['Score'].mean().reset_index()
-                    
+
                     daily_sentiment.columns = ['Tanggal', 'Skor']
                     monthly_sentiment.columns = ['Tanggal', 'Skor']
-                    
-                    fig2 = px.line(monthly_sentiment, 
-                                x='Tanggal', 
-                                y='Skor',
-                                title="Trend Sentimen Bulanan",
-                                labels={'Skor': 'Intensitas Sentimen'},
-                                markers=True)
+
+                    # Tambahkan kolom label bulan-tahun
+                    monthly_sentiment['Bulan-Tahun'] = monthly_sentiment['Tanggal'].dt.strftime('%B %Y')
+
+                    # ==== GRAFIK BULANAN ====
+                    fig2 = px.line(
+                        monthly_sentiment,
+                        x='Tanggal',
+                        y='Skor',
+                        title="Trend Sentimen Bulanan",
+                        labels={'Skor': 'Intensitas Sentimen', 'Tanggal': 'Bulan'},
+                        hover_data={'Skor': ':.2f'},
+                        markers=True
+                    )
                     fig2.update_xaxes(
                         dtick="M1",
                         tickformat="%b\n%Y",
@@ -59,29 +67,67 @@ def visualization():
                         hovermode="x unified",
                         height=500
                     )
-                    
                     st.plotly_chart(fig2, use_container_width=True)
+                    
                     if not daily_sentiment.empty:
                         col1, col2, col3 = st.columns(3)
                         with col1:
                             max_date = daily_sentiment.loc[daily_sentiment['Skor'].idxmax(), 'Tanggal']
                             st.metric("Hari Paling Positif", 
                                     max_date.strftime('%d %b %Y'), 
-                                    f"Score: {daily_sentiment['Skor'].max():.2f}")
+                                    f"{daily_sentiment['Skor'].max():.2f}")
                         with col2:
                             min_date = daily_sentiment.loc[daily_sentiment['Skor'].idxmin(), 'Tanggal']
                             st.metric("Hari Paling Negatif", 
                                     min_date.strftime('%d %b %Y'), 
-                                    f"Score: {daily_sentiment['Skor'].min():.2f}")
+                                    f"{daily_sentiment['Skor'].min():.2f}")
                         with col3:
                             st.metric("Rata-rata Harian", 
                                     f"{daily_sentiment['Skor'].mean():.2f}")
                     else:
                         st.warning("Tidak ada data valid untuk ditampilkan")
-        
+
+                    # ==== SELECTBOX UNTUK PILIH BULAN ====
+                    selected_month_label = st.selectbox("Pilih bulan untuk melihat tren harian:", monthly_sentiment['Bulan-Tahun'])
+
+                    # Ambil bulan dan tahun dari label
+                    selected_month_dt = pd.to_datetime(selected_month_label)
+                    selected_month = selected_month_dt.month
+                    selected_year = selected_month_dt.year
+
+                    # ==== FILTER HARIAN ====
+                    daily_sentiment['Tanggal'] = pd.to_datetime(daily_sentiment['Tanggal'])  # pastikan datetime
+                    daily_filtered = daily_sentiment[
+                        (daily_sentiment['Tanggal'].dt.month == selected_month) &
+                        (daily_sentiment['Tanggal'].dt.year == selected_year)
+                    ]
+
+                    if not daily_filtered.empty:
+                        # ==== GRAFIK HARIAN ====
+                        fig_daily = px.line(
+                            daily_filtered,
+                            x='Tanggal',
+                            y='Skor',
+                            title=f"Trend Sentimen Harian - {selected_month_label}",
+                            labels={'Skor': 'Intensitas Sentimen', 'Tanggal': 'Tanggal'},
+                            hover_data={'Skor': ':.2f'},
+                            markers=True
+                        )
+                        fig_daily.update_layout(
+                            xaxis_title="Tanggal",
+                            yaxis_title="Skor Sentimen",
+                            hovermode="x unified",
+                            height=500
+                        )
+                        st.plotly_chart(fig_daily, use_container_width=True)
+                    else:
+                        st.warning("Tidak ada data harian untuk bulan yang dipilih.")
+
         except Exception as e:
             st.error(f"Terjadi error saat memproses data: {str(e)}")
             st.write("Detail error:", e)
+
+
     
     with tab3:
         st.subheader("Word Cloud Sentimen")
@@ -149,7 +195,6 @@ def visualization():
             
             fig4 = px.bar(kata_data, x='Kata', y='Frekuensi', color='Sentimen',
                         barmode='group', height=500,
-                        title='Kata-Kata Paling Umum Berdasarkan Sentimen',
                         color_discrete_map={'Positif': 'blue', 'Negatif': 'red'})
             
             fig4.update_layout(xaxis_title='Kata',

@@ -5,7 +5,7 @@ from utils import load_slang_dictionary
 from preprocessing import preprocess_text
 from model import train_model, evaluate_model
 
-data = pd.read_csv('data/Hasil_Labelling3.csv', sep=';', on_bad_lines='skip')
+data = pd.read_csv('data/Hasil_Labelling.csv', sep=';', on_bad_lines='skip')
 slang_dict = load_slang_dictionary('data/slang.txt')
 
 X = data['cleaned']
